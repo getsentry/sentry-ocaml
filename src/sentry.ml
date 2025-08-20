@@ -13,6 +13,9 @@ let global_client = ref None
 
 (** Initialization of global client *)
 let init dsn =
+  (* Enable OCaml backtraces for stack trace capture *)
+  Printexc.record_backtrace true;
+
   match Utils.parse_dsn dsn with
   | Some dsn_info ->
       let context = Context.default in

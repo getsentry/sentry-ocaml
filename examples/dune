@@ -1,7 +1,11 @@
 (executable
- (name basic_example_1)
- (libraries sentry-ocaml lwt lwt.unix unix))
+ (name basic_1)
+ (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))
 
 (executable
- (name basic_example_2)
- (libraries sentry-ocaml lwt lwt.unix unix))
+ (name basic_2)
+ (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))
+
+(executable
+ (name stack_trace)
+ (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))

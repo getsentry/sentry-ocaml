@@ -24,7 +24,9 @@ let main () =
         match result with
         | Ok () -> Lwt.return_unit
         | Error _msg -> Lwt.return_unit))
-  | Error _err -> Lwt.return_unit
+  | Error msg ->
+      Printf.printf "Sentry client initialization failed: %s\n" msg;
+      Lwt.return_unit
 ;;
 
 let () = Lwt_main.run (main ())
