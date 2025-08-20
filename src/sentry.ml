@@ -30,7 +30,7 @@ let init dsn =
 let capture_exception exn =
   match !global_client with
   | Some client ->
-      let event = Event.create ~exception_:exn "error" in
+      let event = Event.create ~exception_:exn ~context:client.context "error" in
       Transport.send_event client.transport event
   | None -> Lwt.return (Error "Call init to initialize the Sentry client first")
 ;;
@@ -39,7 +39,7 @@ let capture_exception exn =
 let capture_message message =
   match !global_client with
   | Some client ->
-      let event = Event.create ~message "error" in
+      let event = Event.create ~message ~context:client.context "error" in
       Transport.send_event client.transport event
   | None -> Lwt.return (Error "Call init to initialize the Sentry client first")
 ;;
@@ -49,6 +49,50 @@ let set_user user =
   match !global_client with
   | Some client ->
       let context = Context.set_user client.context user in
+      let updated_client = { client with context } in
+      global_client := Some updated_client;
+      Lwt.return_unit
+  | None -> Lwt.return_unit
+;;
+
+(** Set a tag for the global client *)
+let set_tag key value =
+  match !global_client with
+  | Some client ->
+      let context = Context.set_tag client.context key value in
+      let updated_client = { client with context } in
+      global_client := Some updated_client;
+      Lwt.return_unit
+  | None -> Lwt.return_unit
+;;
+
+(** Set extra data for the global client *)
+let set_extra key value =
+  match !global_client with
+  | Some client ->
+      let context = Context.set_extra client.context key value in
+      let updated_client = { client with context } in
+      global_client := Some updated_client;
+      Lwt.return_unit
+  | None -> Lwt.return_unit
+;;
+
+(** Set environment for the global client *)
+let set_environment env =
+  match !global_client with
+  | Some client ->
+      let context = Context.set_environment client.context env in
+      let updated_client = { client with context } in
+      global_client := Some updated_client;
+      Lwt.return_unit
+  | None -> Lwt.return_unit
+;;
+
+(** Set release version for the global client *)
+let set_release release =
+  match !global_client with
+  | Some client ->
+      let context = Context.set_release client.context release in
       let updated_client = { client with context } in
       global_client := Some updated_client;
       Lwt.return_unit

@@ -1,4 +1,6 @@
 module Event = struct
+  module Context = Context.Context
+  
   type stack_frame = {
     filename : string option;
     function_name : string option;
@@ -15,6 +17,7 @@ module Event = struct
     stack_trace : stack_frame list option;
     platform : string;
     sdk : string;
+    context : Context.t option;
   }
 
   (** Parse a single stack frame line *)
@@ -95,7 +98,7 @@ module Event = struct
   ;;
 
   (* Create a new event *)
-  let create ?message ?exception_ level =
+  let create ?message ?exception_ ?context level =
     (* Extract stack trace if exception is provided *)
     let stack_trace =
       if Option.is_some exception_ then
@@ -119,6 +122,7 @@ module Event = struct
       stack_trace;
       platform = "ocaml";
       sdk = "sentry-ocaml";
+      context;
     }
   ;;
 
@@ -184,6 +188,15 @@ module Event = struct
           in
 
           ("exception", `Assoc [ ("values", `List [ `Assoc exception_data ]) ]) :: fields
+      | None -> fields
+    in
+
+    (* Add context data if available *)
+    let fields =
+      match event.context with
+      | Some context ->
+          let context_fields = Context.to_json context in
+          context_fields @ fields
       | None -> fields
     in
 

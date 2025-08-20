@@ -28,7 +28,10 @@ jobs:
     - name: Install dune
       run: opam install dune
 
-    - name: Install package and dependencies
+    - name: Install package dependencies
+      run: opam install --deps-only . --with-test --with-dev
+
+    - name: Install package
       run: opam install . --with-test --with-dev
 
     - name: Build
