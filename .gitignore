@@ -34,3 +34,8 @@ setup.log
 
 # Local OPAM switch
 _opam/
+
+# Environment variables / binaries / secrets
+.env
+relay
+.relay

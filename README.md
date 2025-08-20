@@ -1,2 +1,3 @@
-# sentry-ocaml
-Hack Week Project: Sentry SDK for OCaml
+# Sentry SDK for OCaml
+
+A native OCaml SDK for Sentry error monitoring and performance tracking.

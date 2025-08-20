@@ -1,0 +1,15 @@
+(executable
+ (name basic_example_1)
+ (libraries
+  sentry-ocaml
+  lwt
+  lwt.unix
+  unix))
+
+(executable
+ (name basic_example_2)
+ (libraries
+  sentry-ocaml
+  lwt
+  lwt.unix
+  unix))

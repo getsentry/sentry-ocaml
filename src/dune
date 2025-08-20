@@ -1,0 +1,19 @@
+(library
+ (name sentry)
+ (public_name sentry-ocaml)
+ (libraries
+  cohttp
+  cohttp-lwt
+  cohttp-lwt-unix
+  lwt
+  yojson
+  uuidm
+  logs
+  base64
+  cmdliner
+  fmt
+  result
+  unix
+  str
+  lwt_ssl)
+ (wrapped true))
