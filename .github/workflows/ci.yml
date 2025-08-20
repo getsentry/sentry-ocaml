@@ -25,20 +25,23 @@ jobs:
       with:
         ocaml-compiler: 5
 
+    - name: Install dune
+      run: opam install dune
+
     - name: Install dependencies
       run: opam install . --deps-only --with-test
 
     - name: Build
-      run: opam exec -- dune build
+      run: dune build
 
     - name: Run tests
-      run: opam exec -- dune runtest
+      run: dune runtest
 
     - name: Check formatting
-      run: opam exec -- dune build @fmt
+      run: dune build @fmt
 
     - name: Build documentation
-      run: opam exec -- dune build @doc
+      run: dune build @doc
 
   lint-doc:
     runs-on: ubuntu-latest
