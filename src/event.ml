@@ -1,6 +1,6 @@
 module Event = struct
   module Context = Context.Context
-  
+
   type stack_frame = {
     filename : string option;
     function_name : string option;

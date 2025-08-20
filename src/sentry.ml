@@ -3,6 +3,7 @@
 module Context = Context.Context
 module Transport = Transport.Transport
 module Event = Event.Event
+module Request = Request.Request
 
 type client = {
   context : Context.t;
@@ -44,7 +45,6 @@ let capture_message message =
   | None -> Lwt.return (Error "Call init to initialize the Sentry client first")
 ;;
 
-(** Global client context management *)
 let set_user user =
   match !global_client with
   | Some client ->
@@ -55,7 +55,6 @@ let set_user user =
   | None -> Lwt.return_unit
 ;;
 
-(** Set a tag for the global client *)
 let set_tag key value =
   match !global_client with
   | Some client ->
@@ -66,7 +65,6 @@ let set_tag key value =
   | None -> Lwt.return_unit
 ;;
 
-(** Set extra data for the global client *)
 let set_extra key value =
   match !global_client with
   | Some client ->
@@ -77,7 +75,6 @@ let set_extra key value =
   | None -> Lwt.return_unit
 ;;
 
-(** Set environment for the global client *)
 let set_environment env =
   match !global_client with
   | Some client ->
@@ -88,11 +85,34 @@ let set_environment env =
   | None -> Lwt.return_unit
 ;;
 
-(** Set release version for the global client *)
 let set_release release =
   match !global_client with
   | Some client ->
       let context = Context.set_release client.context release in
+      let updated_client = { client with context } in
+      global_client := Some updated_client;
+      Lwt.return_unit
+  | None -> Lwt.return_unit
+;;
+
+let set_request_context
+    ?headers
+    ?query_string
+    ?data
+    ?cookies
+    ?env
+    ?body_size
+    ?user_agent
+    method_
+    url =
+  let request =
+    Request.create method_ url
+      (Option.value ~default:[] headers)
+      query_string data cookies env body_size user_agent
+  in
+  match !global_client with
+  | Some client ->
+      let context = Context.set_request client.context request in
       let updated_client = { client with context } in
       global_client := Some updated_client;
       Lwt.return_unit

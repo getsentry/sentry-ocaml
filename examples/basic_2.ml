@@ -20,7 +20,7 @@ let main () =
       (* Set some tags for categorizing events *)
       let* () = Sentry.set_tag "component" "user_management" in
       let* () = Sentry.set_tag "feature" "file_upload" in
-      
+
       (* Set some extra data for additional context *)
       let* () = Sentry.set_extra "session_duration" "45m" in
       let* () = Sentry.set_extra "file_size" "2.3MB" in

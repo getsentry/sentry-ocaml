@@ -9,3 +9,7 @@
 (executable
  (name stack_trace)
  (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))
+
+(executable
+ (name http_request)
+ (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))

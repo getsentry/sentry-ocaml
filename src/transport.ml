@@ -83,7 +83,7 @@ module Transport = struct
     let headers = build_http_headers auth_header in
 
     (* Debug prints to show the entire request structure *)
-    Printf.printf "=== SENTRY REQUEST DEBUG ===\n";
+    Printf.printf "\n=== SENTRY REQUEST DEBUG ===\n";
     Printf.printf "Endpoint: %s\n" transport.endpoint;
     Printf.printf "Auth Header: %s\n" auth_header;
     Printf.printf "Headers:\n";
