@@ -1,4 +1,3 @@
 (test
  (name sentry_tests)
- (libraries
-  alcotest))
+ (libraries alcotest))

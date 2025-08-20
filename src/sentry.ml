@@ -20,8 +20,8 @@ let init dsn =
       let client = { context; transport } in
       global_client := Some client;
       Lwt.return (Ok client)
-  | None ->
-      Lwt.return (Error "Invalid DSN format")
+  | None -> Lwt.return (Error "Invalid DSN format")
+;;
 
 (** Capture an exception using the global client *)
 let capture_exception exn =
@@ -29,8 +29,8 @@ let capture_exception exn =
   | Some client ->
       let event = Event.create ~exception_:exn "error" in
       Transport.send_event client.transport event
-  | None ->
-      Lwt.return (Error "Call init to initialize the Sentry client first")
+  | None -> Lwt.return (Error "Call init to initialize the Sentry client first")
+;;
 
 (** Capture a message using the global client *)
 let capture_message message =
@@ -38,8 +38,8 @@ let capture_message message =
   | Some client ->
       let event = Event.create ~message "error" in
       Transport.send_event client.transport event
-  | None ->
-      Lwt.return (Error "Call init to initialize the Sentry client first")
+  | None -> Lwt.return (Error "Call init to initialize the Sentry client first")
+;;
 
 (** Global client context management *)
 let set_user user =
@@ -49,5 +49,5 @@ let set_user user =
       let updated_client = { client with context } in
       global_client := Some updated_client;
       Lwt.return_unit
-  | None ->
-      Lwt.return_unit
+  | None -> Lwt.return_unit
+;;

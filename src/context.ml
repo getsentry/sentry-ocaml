@@ -9,14 +9,8 @@ module Context = struct
     ip_address : string option;
   }
 
-  type t = {
-    user : user option;
-  }
+  type t = { user : user option }
 
-  let default = {
-    user = None;
-  }
-
-  let set_user _context user =
-    { user = Some user }
+  let default = { user = None }
+  let set_user _context user = { user = Some user }
 end

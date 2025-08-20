@@ -13,7 +13,7 @@ let parse_dsn dsn =
     if List.length parts = 2 then
       let protocol = List.hd parts in
       let rest = List.hd (List.tl parts) in
-  
+
       (* Split on '@' to separate public key from the rest *)
       let parts = String.split_on_char '@' rest in
       if List.length parts = 2 then
@@ -26,26 +26,18 @@ let parse_dsn dsn =
         let host_path = List.rev (List.tl (List.rev path_parts)) in
         let endpoint = String.concat "/" host_path in
 
-        Some { 
-          full_dsn = dsn;
-          base_uri = protocol ^ "://" ^ endpoint; 
-          public_key; 
-          project_id 
-        }
+        Some { full_dsn = dsn; base_uri = protocol ^ "://" ^ endpoint; public_key; project_id }
       else
         None
     else
       None
   with _ -> None
+;;
 
 (* Get the current timestamp as a string in ISO 8601 format *)
 let current_timestamp_iso8601 () =
   let current_time_float = Unix.time () in
   let tm = Unix.gmtime current_time_float in
-  Printf.sprintf "%04d-%02d-%02dT%02d:%02d:%02dZ"
-  (tm.Unix.tm_year + 1900)
-  (tm.Unix.tm_mon + 1)
-  tm.Unix.tm_mday
-  tm.Unix.tm_hour
-  tm.Unix.tm_min
-  tm.Unix.tm_sec
+  Printf.sprintf "%04d-%02d-%02dT%02d:%02d:%02dZ" (tm.Unix.tm_year + 1900) (tm.Unix.tm_mon + 1)
+    tm.Unix.tm_mday tm.Unix.tm_hour tm.Unix.tm_min tm.Unix.tm_sec
+;;
