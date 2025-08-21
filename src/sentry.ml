@@ -28,19 +28,21 @@ let init dsn =
 ;;
 
 (** Capture an exception using the global client *)
-let capture_exception exn =
+let capture_exception ?level exn =
+  let level = Option.value level ~default:"error" in
   match !global_client with
   | Some client ->
-      let event = Event.create ~exception_:exn ~context:client.context "error" in
+      let event = Event.create ~exception_:exn ~context:client.context level in
       Transport.send_event client.transport event
   | None -> Lwt.return (Error "Call init to initialize the Sentry client first")
 ;;
 
 (** Capture a message using the global client *)
-let capture_message message =
+let capture_message ?level message =
+  let level = Option.value level ~default:"info" in
   match !global_client with
   | Some client ->
-      let event = Event.create ~message ~context:client.context "error" in
+      let event = Event.create ~message ~context:client.context level in
       Transport.send_event client.transport event
   | None -> Lwt.return (Error "Call init to initialize the Sentry client first")
 ;;

@@ -1,9 +1,13 @@
 (executable
- (name basic_1)
+ (name basic_exn_1)
  (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))
 
 (executable
- (name basic_2)
+ (name basic_exn_2)
+ (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))
+
+(executable
+ (name basic_msg)
  (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))
 
 (executable
