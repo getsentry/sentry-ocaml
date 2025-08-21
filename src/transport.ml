@@ -41,7 +41,9 @@ module Transport = struct
   let create_envelope (event : Event.t) (item_type : string) =
     let event_json = Event.to_json event in
     let header = build_envelope_header event in
-    let item_header = build_item_header (String.length (Yojson.Basic.to_string event_json)) item_type in
+    let item_header =
+      build_item_header (String.length (Yojson.Basic.to_string event_json)) item_type
+    in
 
     let header_str = Yojson.Basic.to_string header in
     let item_header_str = Yojson.Basic.to_string item_header in

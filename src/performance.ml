@@ -64,7 +64,9 @@ module Performance = struct
 
   (** Finish a transaction: set its end time and update the registry *)
   let finish_transaction transaction =
-    let finished_transaction = { transaction with end_time = Some (Utils.current_timestamp_iso8601 ()) } in
+    let finished_transaction =
+      { transaction with end_time = Some (Utils.current_timestamp_iso8601 ()) }
+    in
     active_transactions :=
       List.map
         (fun txn ->
@@ -83,38 +85,44 @@ module Performance = struct
     Printf.printf "  name: %s\n" txn.name;
     Printf.printf "  operation: %s\n" txn.operation;
     Printf.printf "  start_time: %s\n" txn.start_time;
-    Printf.printf "  end_time: %s\n" (match txn.end_time with Some t -> t | None -> "None");
+    Printf.printf "  end_time: %s\n"
+      (match txn.end_time with
+      | Some t -> t
+      | None -> "None");
     Printf.printf "  spans count: %d\n" (List.length txn.spans);
-    
+
     let fields = [] in
-    
+
     let fields = ("transaction_id", `String txn.id) :: fields in
-    let fields = ("transaction", `String txn.name) :: fields in    
-    let fields = ("op", `String txn.operation) :: fields in    
-    let fields = ("start_timestamp", `String txn.start_time) :: fields in   
+    let fields = ("transaction", `String txn.name) :: fields in
+    let fields = ("op", `String txn.operation) :: fields in
+    let fields = ("start_timestamp", `String txn.start_time) :: fields in
     let fields =
       match txn.end_time with
       | Some end_time -> ("timestamp", `String end_time) :: fields
       | None -> fields
-    in     
+    in
     let fields = ("trace_id", `String txn.id) :: fields in
-    
-    let spans_json = List.map (fun (s : span) ->
-      let span_fields = [] in
-      let span_fields = ("span_id", `String s.id) :: span_fields in
-      let span_fields = ("op", `String s.operation) :: span_fields in
-      let span_fields = ("description", `String s.name) :: span_fields in
-      let span_fields = ("start_timestamp", `String s.start_time) :: span_fields in
-      let span_fields =
-        match s.end_time with
-        | Some end_time -> ("timestamp", `String end_time) :: span_fields
-        | None -> span_fields
-      in
-      let span_fields = ("parent_span_id", `String s.parent_id) :: span_fields in
-      `Assoc span_fields
-    ) txn.spans in
+
+    let spans_json =
+      List.map
+        (fun (s : span) ->
+          let span_fields = [] in
+          let span_fields = ("span_id", `String s.id) :: span_fields in
+          let span_fields = ("op", `String s.operation) :: span_fields in
+          let span_fields = ("description", `String s.name) :: span_fields in
+          let span_fields = ("start_timestamp", `String s.start_time) :: span_fields in
+          let span_fields =
+            match s.end_time with
+            | Some end_time -> ("timestamp", `String end_time) :: span_fields
+            | None -> span_fields
+          in
+          let span_fields = ("parent_span_id", `String s.parent_id) :: span_fields in
+          `Assoc span_fields)
+        txn.spans
+    in
     let fields = ("spans", `List spans_json) :: fields in
-    
+
     fields
   ;;
 end

@@ -32,7 +32,7 @@ jobs:
     - name: Install dependencies
       run: |
         eval $(opam env)
-        opam install $(dune external-lib-deps --missing --with-test)
+        opam install $(dune external-lib-deps --missing @all)
 
     - name: Build
       run: |
