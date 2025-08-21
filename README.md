@@ -1,10 +1,12 @@
-# Sentry SDK for OCaml 🚀
+# (Experimental) Sentry SDK for OCaml 🚀
 
 [![CI](https://github.com/getsentry/sentry-ocaml/workflows/CI/badge.svg)](https://github.com/getsentry/sentry-ocaml/actions/workflows/ci.yml)
 [![OCaml](https://img.shields.io/badge/OCaml-4.14%2B-blue.svg)](https://ocaml.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A native OCaml SDK for Sentry error monitoring and performance tracking. Built with modern OCaml features and Lwt for asynchronous operations.
+
+⚠️ This SDK was created as a Sentry Hack Week (hackathon) project and is currently experimental / not production-ready.
 
 ## ✨ Features
 
@@ -171,7 +173,7 @@ let perform_complex_operation () =
   let _ = Sentry.finish_span save_span in
   
   (* Finish and send the transaction *)
-  let _ = Sentry.finish_transaction transaction in
+  let* _ = Sentry.finish_transaction transaction in
   
   Lwt.return_unit
 
@@ -366,4 +368,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Created during Sentry Hack Week - not officially supported
+**Note**: This SDK was created during Sentry Hack Week and is not officially supported by Sentry.
