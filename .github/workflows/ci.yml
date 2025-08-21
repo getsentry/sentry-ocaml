@@ -32,7 +32,8 @@ jobs:
     - name: Install dependencies
       run: |
         eval $(opam env)
-        opam install . --deps-only --with-test --with-dev
+        opam install cohttp cohttp-lwt cohttp-lwt-unix lwt lwt-unix lwt-ssl yojson uuidm logs base64 cmdliner fmt result
+        opam install alcotest alcotest-lwt ocamlformat merlin
 
     - name: Build
       run: |
