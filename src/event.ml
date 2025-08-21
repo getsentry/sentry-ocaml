@@ -1,5 +1,6 @@
 module Event = struct
   module Context = Context.Context
+  module Performance = Performance.Performance
 
   type stack_frame = {
     filename : string option;
@@ -10,7 +11,7 @@ module Event = struct
 
   type t = {
     event_id : string;
-    timestamp : float;
+    timestamp : string;
     level : string;
     message : string option;
     exception_ : exn option;
@@ -18,6 +19,7 @@ module Event = struct
     platform : string;
     sdk : string;
     context : Context.t option;
+    transaction : Performance.transaction option;
   }
 
   (** Parse a single stack frame line *)
@@ -98,7 +100,7 @@ module Event = struct
   ;;
 
   (* Create a new event *)
-  let create ?message ?exception_ ?context level =
+  let create ?message ?exception_ ?context ?transaction level =
     (* Extract stack trace if exception is provided *)
     let stack_trace =
       if Option.is_some exception_ then
@@ -114,8 +116,8 @@ module Event = struct
     in
 
     {
-      event_id = Uuidm.v4_gen (Random.State.make_self_init ()) () |> Uuidm.to_string;
-      timestamp = Unix.time ();
+      event_id = Utils.generate_uuid ();
+      timestamp = Utils.current_timestamp_iso8601 ();
       level;
       message;
       exception_;
@@ -123,6 +125,7 @@ module Event = struct
       platform = "ocaml";
       sdk = "sentry-ocaml";
       context;
+      transaction;
     }
   ;;
 
@@ -131,11 +134,17 @@ module Event = struct
     let fields =
       [
         ("event_id", `String event.event_id);
-        ("timestamp", `Float event.timestamp);
         ("level", `String event.level);
         ("platform", `String event.platform);
         ("sdk", `Assoc [ ("name", `String event.sdk); ("version", `String "0.1.0") ]);
       ]
+    in
+
+    (* Only add timestamp if no transaction is present *)
+    let fields =
+      match event.transaction with
+      | None -> ("timestamp", `String event.timestamp) :: fields
+      | Some _ -> fields
     in
 
     let fields =
@@ -197,6 +206,15 @@ module Event = struct
       | Some context ->
           let context_fields = Context.to_json context in
           context_fields @ fields
+      | None -> fields
+    in
+
+    (* Add transaction data if available *)
+    let fields =
+      match event.transaction with
+      | Some transaction ->
+          let transaction_fields = Performance.to_json_transaction transaction in
+          transaction_fields @ fields
       | None -> fields
     in
 

@@ -4,6 +4,7 @@ module Context = Context.Context
 module Transport = Transport.Transport
 module Event = Event.Event
 module Request = Request.Request
+module Performance = Performance.Performance
 
 type client = {
   context : Context.t;
@@ -33,7 +34,7 @@ let capture_exception ?level exn =
   match !global_client with
   | Some client ->
       let event = Event.create ~exception_:exn ~context:client.context level in
-      Transport.send_event client.transport event
+      Transport.send_event client.transport event "event"
   | None -> Lwt.return (Error "Call init to initialize the Sentry client first")
 ;;
 
@@ -43,9 +44,41 @@ let capture_message ?level message =
   match !global_client with
   | Some client ->
       let event = Event.create ~message ~context:client.context level in
-      Transport.send_event client.transport event
+      Transport.send_event client.transport event "event"
   | None -> Lwt.return (Error "Call init to initialize the Sentry client first")
 ;;
+
+(** Performance monitoring *)
+
+(** Start a new child span within a transaction *)
+let start_child (transaction : Performance.transaction) ~name ~operation =
+  Performance.create_span ~parent_id:transaction.id ~name ~operation
+;;
+
+(** Finish a span *)
+let finish_span span = Performance.finish_span span
+
+(** Start a new transaction *)
+let start_transaction ~name ~operation = Performance.create_transaction ~name ~operation
+
+(** Send a finished transaction to Sentry *)
+let send_transaction (transaction : Performance.transaction) =
+  match !global_client with
+  | Some client ->
+      let event = Event.create ~context:client.context ~transaction "info" in
+      Transport.send_event client.transport event "transaction"
+  | None -> Lwt.return (Error "Call init to initialize the Sentry client first")
+;;
+
+(** Finish a transaction and send it to Sentry *)
+let finish_transaction (txn : Performance.transaction) =
+  let open Lwt.Syntax in
+  let finished_txn = Performance.finish_transaction txn in
+  let* _ = send_transaction finished_txn in
+  Lwt.return finished_txn
+;;
+
+(** Context management *)
 
 let set_user user =
   match !global_client with

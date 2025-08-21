@@ -33,15 +33,15 @@ module Transport = struct
   ;;
 
   (* Build item header for the envelope *)
-  let build_item_header payload_length =
-    `Assoc [ ("type", `String "event"); ("length", `Int payload_length) ]
+  let build_item_header payload_length item_type =
+    `Assoc [ ("type", `String item_type); ("length", `Int payload_length) ]
   ;;
 
   (* Create Sentry envelope *)
-  let create_envelope (event : Event.t) =
+  let create_envelope (event : Event.t) (item_type : string) =
     let event_json = Event.to_json event in
     let header = build_envelope_header event in
-    let item_header = build_item_header (String.length (Yojson.Basic.to_string event_json)) in
+    let item_header = build_item_header (String.length (Yojson.Basic.to_string event_json)) item_type in
 
     let header_str = Yojson.Basic.to_string header in
     let item_header_str = Yojson.Basic.to_string item_header in
@@ -75,10 +75,10 @@ module Transport = struct
   ;;
 
   (* Send event to Sentry *)
-  let send_event transport (event : Event.t) =
+  let send_event transport (event : Event.t) (item_type : string) =
     let open Lwt.Syntax in
     let auth_header = build_auth_header transport.dsn_info in
-    let envelope = create_envelope event in
+    let envelope = create_envelope event item_type in
 
     let headers = build_http_headers auth_header in
 
@@ -94,14 +94,22 @@ module Transport = struct
     let body = Cohttp_lwt.Body.of_string envelope in
     let uri = Uri.of_string transport.endpoint in
 
-    let* response, response_body = Cohttp_lwt_unix.Client.post ~headers ~body uri in
-    let* response_body_string = Cohttp_lwt.Body.to_string response_body in
+    try
+      let* response, response_body = Cohttp_lwt_unix.Client.post ~headers ~body uri in
+      let* response_body_string = Cohttp_lwt.Body.to_string response_body in
 
-    (* Debug prints to show the response from Sentry *)
-    Printf.printf "=== SENTRY RESPONSE DEBUG ===\n";
-    Printf.printf "Response: %s\n" response_body_string;
-    Printf.printf "===========================\n\n";
+      (* Debug prints to show the response from Sentry *)
+      Printf.printf "=== SENTRY RESPONSE DEBUG ===\n";
+      Printf.printf "Status: %s\n" (Cohttp.Code.string_of_status (Cohttp.Response.status response));
+      Printf.printf "Response: %s\n" response_body_string;
+      Printf.printf "===========================\n\n";
 
-    Lwt.return (handle_response response response_body_string)
+      Lwt.return (handle_response response response_body_string)
+    with e ->
+      (* Debug prints to show errors, if any *)
+      Printf.printf "=== SENTRY ERROR DEBUG ===\n";
+      Printf.printf "Exception: %s\n" (Printexc.to_string e);
+      Printf.printf "===========================\n\n";
+      Lwt.return (Error (Printf.sprintf "HTTP request failed: %s" (Printexc.to_string e)))
   ;;
 end

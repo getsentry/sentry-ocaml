@@ -17,3 +17,7 @@
 (executable
  (name http_request)
  (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))
+
+(executable
+ (name performance)
+ (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))

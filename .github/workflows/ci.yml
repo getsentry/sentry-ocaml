@@ -28,23 +28,31 @@ jobs:
     - name: Install dune
       run: |
         opam install dune
-        eval $(opam env)
 
     - name: Install dependencies
       run: |
+        eval $(opam env)
         opam install $(dune external-lib-deps --missing --with-test)
 
     - name: Build
-      run: dune build
+      run: |
+        eval $(opam env)
+        dune build
 
     - name: Run tests
-      run: dune runtest
+      run: |
+        eval $(opam env)
+        dune runtest
 
     - name: Check formatting
-      run: dune build @fmt
+      run: |
+        eval $(opam env)
+        dune build @fmt
 
     - name: Build documentation
-      run: dune build @doc
+      run: |
+        eval $(opam env)
+        dune build @doc
 
   lint-doc:
     runs-on: ubuntu-latest
