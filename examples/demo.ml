@@ -25,7 +25,7 @@ let main () =
   let* client_result = Sentry.init dsn in
 
   match client_result with
-  | Ok _client -> (
+  | Ok _client ->
       (* Set user information *)
       let* () =
         Sentry.set_user
@@ -67,7 +67,7 @@ let main () =
 
       let* _ = Sentry.capture_message "lunch is almost over! running upstairs now" in
       let* () = run_upstairs () in
-      Lwt.return_unit)
+      Lwt.return_unit
   | Error msg ->
       Printf.printf "Sentry client initialization failed: %s\n" msg;
       Lwt.return_unit
