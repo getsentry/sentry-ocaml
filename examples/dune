@@ -21,3 +21,7 @@
 (executable
  (name performance)
  (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))
+
+(executable
+ (name demo)
+ (libraries sentry-ocaml lwt lwt.unix lwt_ssl unix))
